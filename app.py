@@ -1,5 +1,5 @@
 from webob import Request,Response
-
+from parse import parse
 class DgFrameApp:
 
     def __init__(self):
@@ -13,9 +13,9 @@ class DgFrameApp:
     def handle_request(self,request):
         response=Response()
 
-        handler=self.find_handler(request)
+        handler,kwargs=self.find_handler(request)
         if handler is not None:
-            handler(request,response)
+            handler(request,response,**kwargs)
         else:
             self.defaut_response(response)
 
@@ -24,10 +24,11 @@ class DgFrameApp:
 
     def find_handler(self,request):
         for path,handler in self.routes.items():
-            if path==request.path:
-                return handler
+            parsed_result=parse(path,request.path)
+            if parsed_result is not None:
+                return handler,parsed_result.named
 
-
+        return None,None
 
     def defaut_response(self,response):
         response.status_code=404

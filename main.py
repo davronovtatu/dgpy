@@ -18,6 +18,10 @@ def home(request,response):
     response.text="Home page"
 
 
+@app.route("/hello/{name}")
+def greeting(request,response,name):
+    response.text=f"Hello {name}"
+
 
 
 
